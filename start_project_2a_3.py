@@ -46,8 +46,8 @@ def cnn(images, keep_prob):
     images = tf.reshape(images, [-1, IMG_SIZE, IMG_SIZE, NUM_CHANNELS])
     
     # Conv 1
-    W1 = tf.Variable(tf.truncated_normal([9, 9, NUM_CHANNELS, 80], stddev=1.0/np.sqrt(NUM_CHANNELS*9*9)), name='weights_1')
-    b1 = tf.Variable(tf.zeros([80]), name='biases_1')
+    W1 = tf.Variable(tf.truncated_normal([9, 9, NUM_CHANNELS, 90], stddev=1.0/np.sqrt(NUM_CHANNELS*9*9)), name='weights_1')
+    b1 = tf.Variable(tf.zeros([90]), name='biases_1')
 
     conv_1 = tf.nn.relu(tf.nn.conv2d(images, W1, [1, 1, 1, 1], padding='VALID') + b1)
     pool_1 = tf.nn.max_pool(conv_1, ksize= [1, 2, 2, 1], strides= [1, 2, 2, 1], padding='VALID', name='pool_1')
@@ -55,8 +55,8 @@ def cnn(images, keep_prob):
     pool1_drop = tf.nn.dropout(pool_1, keep_prob)
 
     # Conv 2
-    W2 = tf.Variable(tf.truncated_normal([5, 5, 80, 90], stddev=1.0/np.sqrt(80*5*5)), name='weights_2')
-    b2 = tf.Variable(tf.zeros([90]), name='biases_2')
+    W2 = tf.Variable(tf.truncated_normal([5, 5, 90, 100], stddev=1.0/np.sqrt(90*5*5)), name='weights_2')
+    b2 = tf.Variable(tf.zeros([100]), name='biases_2')
 
     conv_2 = tf.nn.relu(tf.nn.conv2d(pool1_drop, W2, [1, 1, 1, 1], padding='VALID') + b2)
     pool_2 = tf.nn.max_pool(conv_2, ksize= [1, 2, 2, 1], strides= [1, 2, 2, 1], padding='VALID', name='pool_2')
@@ -122,80 +122,95 @@ def main():
         test_acc_gd = []
         for e in range(epochs):
             np.random.shuffle(idx)
-            trainX_shuffle, trainY_shuffle = trainX[idx], trainY[idx]
-            for j in range(0, trainX_shuffle.shape[0], batch_size):
-            	train_step1.run(feed_dict={x: trainX_shuffle[j:j+batch_size], y_: trainY_shuffle[j:j+batch_size], keep_prob: 1.0})
+            trainX, trainY = trainX[idx], trainY[idx]
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                train_step1.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+
             cost_sum = 0
-            for k in range(0, trainX.shape[0], batch_size):
-                cost_sum += entropy_sum.eval(feed_dict={x: trainX[k:k+batch_size], y_: trainY[k:k+batch_size], keep_prob: 1.0})
+
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                cost_sum += entropy_sum.eval(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+
             train_cost = cost_sum/trainY.shape[0]
             train_cost_gd.append(train_cost)
             test_acc_gd.append(accuracy.eval(feed_dict={x: testX, y_: testY, keep_prob: 1.0}))
-            print('epoch', e+1, 'entropy', train_cost_gd[e], 'test accuracy', test_acc_gd[e])
+            print('epoch:', e+1, '| entropy:', train_cost_gd[e], '| test accuracy:', test_acc_gd[e])
 
-        print('Momentum')
+        print('Adding Momentum Term')
         sess.run(tf.global_variables_initializer())
         train_cost_mom = [] 
         test_acc_mom = []
         for e in range(epochs):
             np.random.shuffle(idx)
-            trainX_shuffle, trainY_shuffle = trainX[idx], trainY[idx]
-            for j in range(0, trainX_shuffle.shape[0], batch_size):
-                train_step2.run(feed_dict={x: trainX_shuffle[j:j+batch_size], y_: trainY_shuffle[j:j+batch_size], keep_prob: 1.0})
+            trainX, trainY = trainX[idx], trainY[idx]
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                train_step2.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+
             cost_sum = 0
-            for k in range(0, trainX.shape[0], batch_size):
-                cost_sum += entropy_sum.eval(feed_dict={x: trainX[k:k+batch_size], y_: trainY[k:k+batch_size], keep_prob: 1.0})
+
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                cost_sum += entropy_sum.eval(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+
             train_cost = cost_sum/trainY.shape[0]
             train_cost_mom.append(train_cost)
             test_acc_mom.append(accuracy.eval(feed_dict={x: testX, y_: testY, keep_prob: 1.0}))
-            print('epoch', e+1, 'entropy', train_cost_mom[e], 'test accuracy', test_acc_mom[e])
+            print('epoch:', e+1, '| entropy:', train_cost_mom[e], '| test accuracy:', test_acc_mom[e])
 
-        print('RMSProp')
+        print('Using RMSProp Algorithm')
         sess.run(tf.global_variables_initializer())
         train_cost_rms = [] 
         test_acc_rms = []
         for e in range(epochs):
             np.random.shuffle(idx)
-            trainX_shuffle, trainY_shuffle = trainX[idx], trainY[idx]
-            for j in range(0, trainX_shuffle.shape[0], batch_size):
-                train_step3.run(feed_dict={x: trainX_shuffle[j:j+batch_size], y_: trainY_shuffle[j:j+batch_size], keep_prob: 1.0})
+            trainX, trainY = trainX[idx], trainY[idx]
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                train_step3.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+
             cost_sum = 0
-            for k in range(0, trainX.shape[0], batch_size):
-                cost_sum += entropy_sum.eval(feed_dict={x: trainX[k:k+batch_size], y_: trainY[k:k+batch_size], keep_prob: 1.0})
+
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                cost_sum += entropy_sum.eval(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+
             train_cost = cost_sum/trainY.shape[0]
             train_cost_rms.append(train_cost)
             test_acc_rms.append(accuracy.eval(feed_dict={x: testX, y_: testY, keep_prob: 1.0}))
-            print('epoch', e+1, 'entropy', train_cost_rms[e], 'test accuracy', test_acc_rms[e])
+            print('epoch:', e+1, '| entropy:', train_cost_rms[e], '| test accuracy:', test_acc_rms[e])
 
-        print('Adam')
+        print('Using Adam Optimizer')
         sess.run(tf.global_variables_initializer())
         train_cost_adam = [] 
         test_acc_adam = []
         for e in range(epochs):
             np.random.shuffle(idx)
-            trainX_shuffle, trainY_shuffle = trainX[idx], trainY[idx]
-            for j in range(0, trainX_shuffle.shape[0], batch_size):
-                train_step4.run(feed_dict={x: trainX_shuffle[j:j+batch_size], y_: trainY_shuffle[j:j+batch_size], keep_prob: 1.0})
+            trainX, trainY = trainX[idx], trainY[idx]
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                train_step4.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+           
             cost_sum = 0
-            for k in range(0, trainX.shape[0], batch_size):
-                cost_sum += entropy_sum.eval(feed_dict={x: trainX[k:k+batch_size], y_: trainY[k:k+batch_size], keep_prob: 1.0})
+
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                cost_sum += entropy_sum.eval(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+         
             train_cost = cost_sum/trainY.shape[0]
             train_cost_adam.append(train_cost)
             test_acc_adam.append(accuracy.eval(feed_dict={x: testX, y_: testY, keep_prob: 1.0}))
-            print('epoch', e+1, 'entropy', train_cost_adam[e], 'test accuracy', test_acc_adam[e])
+            print('epoch:', e+1, '| entropy:', train_cost_adam[e], '| test accuracy:', test_acc_adam[e])
 
-        print('Dropout')
+        print('Adding Dropout')
         sess.run(tf.global_variables_initializer())
         train_cost_drop = [] 
         test_acc_drop = []
         for e in range(epochs):
             np.random.shuffle(idx)
-            trainX_shuffle, trainY_shuffle = trainX[idx], trainY[idx]
-            for j in range(0, trainX_shuffle.shape[0], batch_size):
-                train_step1.run(feed_dict={x: trainX_shuffle[j:j+batch_size], y_: trainY_shuffle[j:j+batch_size], keep_prob: 0.5})
+            trainX, trainY = trainX[idx], trainY[idx]
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                train_step1.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 0.5})
+           
             cost_sum = 0
-            for k in range(0, trainX.shape[0], batch_size):
-                cost_sum += entropy_sum.eval(feed_dict={x: trainX[k:k+batch_size], y_: trainY[k:k+batch_size], keep_prob: 1.0})
+
+            for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
+                cost_sum += entropy_sum.eval(feed_dict={x: trainX[start:end], y_: trainY[start:end], keep_prob: 1.0})
+           
             train_cost = cost_sum/trainY.shape[0]
             train_cost_drop.append(train_cost)
             test_acc_drop.append(accuracy.eval(feed_dict={x: testX, y_: testY, keep_prob: 1.0}))

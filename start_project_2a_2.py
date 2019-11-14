@@ -117,7 +117,7 @@ def train(filters):
             for start, end in zip(range(0, N, batch_size), range(batch_size, N, batch_size)):
                 train_step.run(feed_dict={x: trainX[start:end], y_: trainY[start:end]})
             test_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY}))
-            print('filter1', filters[0], 'filter2', filters[1], 'epoch', e+1, 'test accuracy', test_acc[e])
+            print('filter1:', filters[0], '| filter2:', filters[1], '| epoch:', e+1, '| test accuracy:', test_acc[e])
 
         return test_acc
 

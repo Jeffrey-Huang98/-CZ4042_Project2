@@ -122,7 +122,7 @@ def main():
 
             train_cost.append(loss.eval(feed_dict={x: trainX, y_: trainY}))
             test_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY}))
-            print('epoch', e+1, 'entropy', train_cost[e], 'test accuracy', test_acc[e])
+            print('epoch', e+1, '| entropy:', train_cost[e], '| test accuracy:', test_acc[e])
 
 
         plt.figure()
@@ -130,14 +130,14 @@ def main():
         plt.xlabel(str(epochs) + ' iterations')
         plt.ylabel('Entropy cost')
         plt.title('Entropy Cost on Training Data against Epochs')
-        plt.savefig('./figures/part1a_entropy_cost.png')
+        plt.savefig('./figures_part_A/part1a_entropy_cost.png')
 
         plt.figure()
         plt.plot(range(epochs), test_acc)
         plt.xlabel(str(epochs) + ' iterations')
         plt.ylabel('Test accuracy')
         plt.title('Test Acccuracy against Epochs')
-        plt.savefig('./figures/part1a_test_accuracy.png')
+        plt.savefig('./figures_part_A/part1a_test_accuracy.png')
 
         random_integers = np.random.randint(low=0, high=2000, size=2)
         random_integer_1 = random_integers[0]
