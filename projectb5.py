@@ -28,7 +28,7 @@ HIDDEN_SIZE = 20
 no_epochs = 100
 lr = 0.01
 batch_size = 128
-keep_prob = 0.8
+keep_prob = 0.7
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 seed = 10
@@ -357,18 +357,6 @@ def main():
 
   # plot learning curves
   plt.figure(2)
-  plt.plot(range(no_epochs), loss1, label='CNN Char')
-  plt.plot(range(no_epochs), loss2, label='CNN Words')
-  plt.plot(range(no_epochs), loss3, label='RNN Char')
-  plt.plot(range(no_epochs), loss4, label='RNN Words')
-  plt.xlabel(str(no_epochs) + ' iterations')
-  plt.ylabel('entropy')
-  plt.title('Cost entropy against epochs')
-  plt.legend()
-  plt.savefig('./epochcost5.png')
-
-  # plot learning curves
-  plt.figure(3)
   plt.plot(totaltime)
   plt.xticks(range(4), ['CNN_Char', 'CNN_Words', 'RNN_Char', 'RNN_Words'])  
   plt.xlabel('model type')
@@ -377,7 +365,7 @@ def main():
   plt.savefig('./time5.png')
 
   # plot learning curves
-  plt.figure(4)
+  plt.figure(3)
   plt.plot(range(no_epochs), accuraciesDO1, label='CNN Char')
   plt.plot(range(no_epochs), accuraciesDO2, label='CNN Words')
   plt.plot(range(no_epochs), accuraciesDO3, label='RNN Char')
@@ -389,58 +377,41 @@ def main():
   plt.savefig('./accuracyDO5.png')
 
   # plot learning curves
-  plt.figure(5)
-  plt.plot(range(no_epochs), lossDO1, label='CNN Char')
-  plt.plot(range(no_epochs), lossDO2, label='CNN Words')
-  plt.plot(range(no_epochs), lossDO3, label='RNN Char')
-  plt.plot(range(no_epochs), lossDO4, label='RNN Words')
-  plt.xlabel(str(no_epochs) + ' iterations')
-  plt.ylabel('entropy')
-  plt.title('Cost entropy against epochs with Dropout')
-  plt.legend()
-  plt.savefig('./epochcostDO5.png')
-
-  # plot learning curves
-  plt.figure(6)
-  plt.plot(totaltime, label='without dropout')
-  plt.plot(totaltimeDO, label='with dropout')
-  plt.xticks(range(4), ['CNN_Char', 'CNN_Words', 'RNN_Char', 'RNN_Words'])  
-  plt.xlabel('model type')
-  plt.ylabel('time')
-  plt.title('Time Taken per Epochs for Different Neural Network Models')
-  plt.savefig('./timecomparison5.png')
-
-  # plot learning curves
-  plt.figure(7)
+  plt.figure(4)
   plt.plot(range(no_epochs), accuracies1, label='CNN Char without dropout')
-  plt.plot(range(no_epochs), accuracies2, label='CNN Words without dropout')
-  plt.plot(range(no_epochs), accuracies3, label='RNN Char without dropout')
-  plt.plot(range(no_epochs), accuracies4, label='RNN Words without dropout')
   plt.plot(range(no_epochs), accuraciesDO1, label='CNN Char with dropout')
+  plt.xlabel(str(no_epochs) + ' iterations')
+  plt.ylabel('accuracy')
+  plt.title('Accuracy against epochs')
+  plt.legend()
+  plt.savefig('./accuracycomparisonCNNc5.png')
+
+  plt.figure(5)
+  plt.plot(range(no_epochs), accuracies2, label='CNN Words without dropout')
   plt.plot(range(no_epochs), accuraciesDO2, label='CNN Words with dropout')
+  plt.xlabel(str(no_epochs) + ' iterations')
+  plt.ylabel('accuracy')
+  plt.title('Accuracy against epochs')
+  plt.legend()
+  plt.savefig('./accuracycomparisonCNNw5.png')
+
+  plt.figure(6)
+  plt.plot(range(no_epochs), accuracies3, label='RNN Char without dropout')
   plt.plot(range(no_epochs), accuraciesDO3, label='RNN Char with dropout')
+  plt.xlabel(str(no_epochs) + ' iterations')
+  plt.ylabel('accuracy')
+  plt.title('Accuracy against epochs')
+  plt.legend()
+  plt.savefig('./accuracycomparisonRNNc5.png')
+
+  plt.figure(7)
+  plt.plot(range(no_epochs), accuracies4, label='RNN Words without dropout')
   plt.plot(range(no_epochs), accuraciesDO4, label='RNN Words with dropout')
   plt.xlabel(str(no_epochs) + ' iterations')
   plt.ylabel('accuracy')
   plt.title('Accuracy against epochs')
   plt.legend()
-  plt.savefig('./accuracycomparison5.png')
-
-  # plot learning curves
-  plt.figure(8)
-  plt.plot(range(no_epochs), loss1, label='CNN Char without dropout')
-  plt.plot(range(no_epochs), loss2, label='CNN Words without dropout')
-  plt.plot(range(no_epochs), loss3, label='RNN Char without dropout')
-  plt.plot(range(no_epochs), loss4, label='RNN Words without dropout')
-  plt.plot(range(no_epochs), lossDO1, label='CNN Char with dropout')
-  plt.plot(range(no_epochs), lossDO2, label='CNN Words with dropout')
-  plt.plot(range(no_epochs), lossDO3, label='RNN Char with dropout')
-  plt.plot(range(no_epochs), lossDO4, label='RNN Words with dropout')
-  plt.xlabel(str(no_epochs) + ' iterations')
-  plt.ylabel('entropy')
-  plt.title('Cost entropy against epochs with Dropout')
-  plt.legend()
-  plt.savefig('./epochcostcomparison5.png')
+  plt.savefig('./accuracycomparisonRNNw5.png')
 
 if __name__ == '__main__':
   main()
